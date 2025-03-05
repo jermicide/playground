@@ -2,27 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lakey Wrestling</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <!-- YouTube IFrame Player API -->
   <script src="https://www.youtube.com/iframe_api"></script>
+  <link href="https://fonts.cdnfonts.com/css/bebas-neue" rel="stylesheet">
   <style>
-    /* Background image styles with Owasso Rams theme and parallax effect */
+    /* Ensure full height and remove gray bar */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    /* Background image styles with Owasso Rams theme (no parallax) */
     .page-background {
       background-image: url('owassorams.webp'); /* Adjust path if needed (e.g., assets/owassorams.webp) */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-attachment: fixed; /* Key for parallax */
-      height: 100%; /* Ensure full height */
+      height: 100vh; /* Full viewport height */
+      min-height: 100%; /* Ensure it fills the page */
       position: relative;
-    }
-    /* Parallax effect with adjusted background position on scroll */
-    .page-background {
-      background-attachment: fixed;
-      background-position: center calc(50% + 50px); /* Initial offset for effect */
     }
     /* Overlay for readability */
     .page-background::before {
@@ -31,11 +33,11 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
-      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)); /* Gradient overlay for smoother parallax */
+      height: 100vh; /* Match viewport height */
+      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)); /* Gradient overlay */
       z-index: -1;
     }
-    /* Outlined header text with black shadow */
+    /* Outlined header text with black shadow and Bebas Neue font */
     h1, h2 {
       position: relative;
       z-index: 1; /* Ensure text is above overlay */
@@ -45,6 +47,8 @@
         1px -1px 0 #000000,
         -1px 1px 0 #000000,
         1px 1px 0 #000000; /* Black outline effect */
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 2px; /* Match logo spacing */
     }
     /* Carousel custom styles for full-width hero */
     .carousel-inner {
@@ -129,115 +133,4 @@
 <body>
   <div class="page-background container-fluid">
     <div class="row">
-      <div class="col-12">
-        <h1 class="display-4 fw-bold text-center p-5">Lakey Wrestling</h1>
-      </div>
-    </div>
-    <div class="row m-5 p-5">
-      <div class="col-12">
-        <div id="video-list" class="container">
-          <div id="videoCarousel" class="carousel slide">
-            <div class="carousel-inner" id="video-row">
-              <!-- Videos will be inserted here -->
-            </div>
-            <!-- Carousel Indicators with Bigger Thumbnails -->
-            <div class="carousel-indicators" id="video-indicators"></div>
-            <!-- Carousel Controls -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#videoCarousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Instagram Feed via Juicer.io -->
-  <div class="container mt-5">
-    <div class="row mt-5">
-      <div class="col-12 mt-5">
-        <h2 class="text-center mb-4" style="color: #fff;">Socials</h2>
-        <!-- Juicer embed code -->
-        <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-  <!-- YouTube Video Fetch, Carousel, and Playback Script -->
-  <script>
-    // Global array to store player instances
-    let players = [];
-
-    function onYouTubeIframeAPIReady() {
-      // Initialize players after API is ready
-      document.querySelectorAll('.card-iframe').forEach((iframe, index) => {
-        players[index] = new YT.Player(iframe, {
-          events: {
-            'onReady': (event) => {
-              if (index === 0) event.target.playVideo(); // Autoplay first video
-            }
-          }
-        });
-      });
-    }
-
-    async function loadVideos() {
-      const response = await fetch('/api/getVideos?playlistId=PLx3fyeqr0GmvVB8Vlh0b8W3uHSRYzWKr0');
-      const data = await response.json();
-      const videoRow = document.getElementById('video-row');
-      const videoIndicators = document.getElementById('video-indicators');
-      const carousel = document.getElementById('videoCarousel');
-
-      // Create a slide for each video with embedded player
-      data.items.forEach((item, index) => {
-        const videoId = item.snippet.resourceId.videoId;
-        const title = item.snippet.title;
-        const thumbnail = item.snippet.thumbnails.medium.url;
-        const isActive = index === 0; // First item is active
-
-        const slide = document.createElement('div');
-        slide.className = `carousel-item ${isActive ? 'active' : ''}`;
-        slide.innerHTML = `
-          <div class="card">
-            <iframe class="card-iframe" id="player-${index}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1" allowfullscreen></iframe>
-            <div class="card-body">
-              <p class="card-text text-center">${title}</p>
-            </div>
-          </div>
-        `;
-        videoRow.appendChild(slide);
-
-        // Add indicator with thumbnail
-        const indicator = document.createElement('button');
-        indicator.type = 'button';
-        indicator.setAttribute('data-bs-target', '#videoCarousel');
-        indicator.setAttribute('data-bs-slide-to', index);
-        indicator.className = `active ${isActive ? 'active' : ''}`;
-        indicator.style.backgroundImage = `url(${item.snippet.thumbnails.default.url})`; // Use default thumbnail
-        videoIndicators.appendChild(indicator);
-      });
-
-      // Add event listener for indicator clicks to play video
-      videoIndicators.addEventListener('click', (event) => {
-        const button = event.target.closest('button[data-bs-slide-to]');
-        if (button) {
-          const slideTo = parseInt(button.getAttribute('data-bs-slide-to'));
-          const bootstrapCarousel = new bootstrap.Carousel(carousel);
-          bootstrapCarousel.to(slideTo); // Navigate to the slide
-          if (players[slideTo]) players[slideTo].playVideo(); // Play the video
-        }
-      });
-    }
-
-    window.onload = loadVideos;
-  </script>
-</body>
-</html>
+      <div class="col-
