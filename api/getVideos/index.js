@@ -58,7 +58,7 @@ module.exports = async function (context, req) {
     context.log.error('Error:', error);
     context.res = {
       status: 500,
-      body: { error: 'Failed to fetch or cache videos' }
+      body: { error: `Failed to fetch or cache videos ${error}` }
     };
   }
 };
