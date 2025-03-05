@@ -1,0 +1,24 @@
+<h2>youtube embed</h2>
+<!-- HTML -->
+<div id="youtube-channel"></div>
+
+<script>
+function embedYouTubeChannel() {
+    const channelId = "UCzAkzWhL87arrJqg0nQV1-Q"; // Replace with your channel ID (e.g., UCxxxxxxxxxxxxxxxxxxxxxx)
+    const embedCode = `
+        <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/videoseries?list=UULF${channelId.substring(2)}"
+            title="YouTube Channel"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>`;
+
+    document.getElementById('youtube-channel').innerHTML = embedCode;
+}
+
+// Call the function when page loads
+window.onload = embedYouTubeChannel;
+</script>
