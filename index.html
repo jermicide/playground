@@ -9,13 +9,20 @@
   <!-- YouTube IFrame Player API -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <style>
-    /* Background image styles with Owasso Rams theme */
+    /* Background image styles with Owasso Rams theme and parallax effect */
     .page-background {
       background-image: url('owassorams.webp'); /* Adjust path if needed (e.g., assets/owassorams.webp) */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-attachment: fixed; /* Optional: Keeps background fixed */
+      background-attachment: fixed; /* Key for parallax */
+      height: 100%; /* Ensure full height */
+      position: relative;
+    }
+    /* Parallax effect with adjusted background position on scroll */
+    .page-background {
+      background-attachment: fixed;
+      background-position: center calc(50% + 50px); /* Initial offset for effect */
     }
     /* Overlay for readability */
     .page-background::before {
@@ -25,19 +32,19 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)); /* Gradient overlay for smoother parallax */
       z-index: -1;
     }
-    /* Outlined header text */
+    /* Outlined header text with black shadow */
     h1, h2 {
       position: relative;
       z-index: 1; /* Ensure text is above overlay */
       color: #fff; /* White text */
       text-shadow: 
-        -1px -1px 0 #fff,
-        1px -1px 0 #fff,
-        -1px 1px 0 #fff,
-        1px 1px 0 #fff; /* Outline effect */
+        -1px -1px 0 #000000,
+        1px -1px 0 #000000,
+        -1px 1px 0 #000000,
+        1px 1px 0 #000000; /* Black outline effect */
     }
     /* Carousel custom styles for full-width hero */
     .carousel-inner {
@@ -48,7 +55,7 @@
     .carousel-item {
       transition: transform 0.5s ease-in-out;
     }
-    /* Full-width hero card */
+    /* Full-width hero card within container */
     .carousel-item .card {
       width: 100%; /* Full width of container */
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for hero effect */
@@ -94,16 +101,16 @@
     }
     /* Move video down to show more background */
     #video-list {
-      padding-top: 150px; /* Increased from implicit 0 to show more background */
+      padding-top: 300px; /* Increased to show more background */
     }
-    /* Responsive adjustments for title spacing */
+    /* Responsive adjustments for title and video spacing */
     @media (max-width: 767.98px) {
       h1 {
         margin: 2rem 0 !important;
         padding: 1rem 0 !important;
       }
       #video-list {
-        padding-top: 100px; /* Adjusted for mobile to balance background */
+        padding-top: 200px; /* Adjusted for mobile to balance background */
       }
     }
   </style>
@@ -128,7 +135,7 @@
     </div>
     <div class="row">
       <div class="col-12">
-        <div id="video-list">
+        <div id="video-list" class="container">
           <div id="videoCarousel" class="carousel slide">
             <div class="carousel-inner" id="video-row">
               <!-- Videos will be inserted here -->
@@ -151,9 +158,9 @@
   </div>
 
   <!-- Instagram Feed via Juicer.io -->
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
+  <div class="container mt-5">
+    <div class="row mt-5">
+      <div class="col-12 mt-5">
         <h2 class="text-center mb-4" style="color: #fff;">Socials Feed</h2>
         <!-- Juicer embed code -->
         <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
