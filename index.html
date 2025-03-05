@@ -1,24 +1,42 @@
-<h2>youtube embed</h2>
-<!-- HTML -->
-<div id="youtube-channel"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wrestling Videos</title>
+  <style>
+    .video-list { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; }
+    .video-item { width: 300px; text-align: center; }
+    .video-item img { width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Wrestling Videos</h1>
+  <div id="video-list" class="video-list"></div>
 
-<script>
-function embedYouTubeChannel() {
-    const channelId = "UCzAkzWhL87arrJqg0nQV1-Q"; // Replace with your channel ID (e.g., UCxxxxxxxxxxxxxxxxxxxxxx)
-    const embedCode = `
-        <iframe
-            width="560"
-            height="315"
-            src="https://www.youtube.com/embed/videoseries?list=UULF${channelId.substring(2)}"
-            title="YouTube Channel"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-        </iframe>`;
+  <script>
+    async function loadVideos() {
+      const response = await fetch('/api/getVideos?playlistId=PLx3fyeqr0GmsZQ1pJrfCF8bo9O9zckJsq');
+      const data = await response.json();
+      const videoList = document.getElementById('video-list');
 
-    document.getElementById('youtube-channel').innerHTML = embedCode;
-}
+      data.items.forEach(item => {
+        const videoId = item.snippet.resourceId.videoId;
+        const title = item.snippet.title;
+        const thumbnail = item.snippet.thumbnails.medium.url;
 
-// Call the function when page loads
-window.onload = embedYouTubeChannel;
-</script>
+        const videoItem = document.createElement('div');
+        videoItem.className = 'video-item';
+        videoItem.innerHTML = `
+          <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">
+            <img src="${thumbnail}" alt="${title}">
+            <p>${title}</p>
+          </a>
+        `;
+        videoList.appendChild(videoItem);
+      });
+    }
+
+    window.onload = loadVideos;
+  </script>
+</body>
+</html>
