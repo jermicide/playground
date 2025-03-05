@@ -6,6 +6,8 @@
   <title>Quick Pins - Wrestling Videos</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- YouTube IFrame Player API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <style>
     /* Carousel custom styles for full-width hero */
     .carousel-inner {
@@ -29,7 +31,7 @@
       height: 500px; /* Increased height for full-width hero effect */
       border: none;
     }
-    /* Carousel indicators with bigger thumbnails */
+    /* Carousel indicators with 50% bigger thumbnails */
     .carousel-indicators {
       position: relative;
       margin-top: 10px;
@@ -40,8 +42,8 @@
       white-space: nowrap;
     }
     .carousel-indicators [data-bs-target] {
-      width: 100px; /* Bigger thumbnail size */
-      height: 60px; /* Proportional height */
+      width: 150px; /* 50% bigger (100px * 1.5) */
+      height: 90px; /* 50% bigger (60px * 1.5) */
       background-size: cover;
       background-position: center;
       border: 3px solid #fff; /* Thicker border */
@@ -62,37 +64,6 @@
       text-align: center;
       padding: 20px 0;
     }
-    /* Instagram feed styles */
-    .juicer-feed .feed-item {
-      width: 300px !important;
-      margin: 0 10px 20px 10px !important;
-      border: 1px solid rgba(0, 0, 0, 0.125);
-      border-radius: 0.25rem !important;
-      background: #1a1a1a;
-      color: #fff;
-    }
-    .juicer-feed .feed-item img {
-      width: 100% !important;
-      height: auto !important;
-      object-fit: cover !important;
-      border-top-left-radius: 0.25rem !important;
-      border-top-right-radius: 0.25rem !important;
-    }
-    .juicer-feed .j-content {
-      padding: 10px;
-      color: #fff;
-    }
-    @media (max-width: 767.98px) {
-      .juicer-feed .feed-item { width: 100% !important; margin: 0 0 20px 0 !important; }
-    }
-    @media (min-width: 768px) and (max-width: 991.98px) {
-      .juicer-feed .feed-item { width: 45% !important; margin: 0 2.5% 20px 2.5% !important; }
-    }
-    @media (min-width: 992px) {
-      .juicer-feed .feed-item { width: 30% !important; margin: 0 1.5% 20px 1.5% !important; }
-    }
-    .juicer-feed .j-classic { display: none !important; }
-    .juicer-feed .j-grid, .juicer-feed .j-masonry { display: block !important; }
   </style>
   <script>
     document.addEventListener('juicer:feedLoaded', 
@@ -143,13 +114,30 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-  <!-- YouTube Video Fetch and Carousel Script -->
+  <!-- YouTube Video Fetch, Carousel, and Playback Script -->
   <script>
+    // Global array to store player instances
+    let players = [];
+
+    function onYouTubeIframeAPIReady() {
+      // Initialize players after API is ready
+      document.querySelectorAll('.card-iframe').forEach((iframe, index) => {
+        players[index] = new YT.Player(iframe, {
+          events: {
+            'onReady': (event) => {
+              if (index === 0) event.target.playVideo(); // Autoplay first video
+            }
+          }
+        });
+      });
+    }
+
     async function loadVideos() {
       const response = await fetch('/api/getVideos?playlistId=PLx3fyeqr0GmvVB8Vlh0b8W3uHSRYzWKr0');
       const data = await response.json();
       const videoRow = document.getElementById('video-row');
       const videoIndicators = document.getElementById('video-indicators');
+      const carousel = document.getElementById('videoCarousel');
 
       // Create a slide for each video with embedded player
       data.items.forEach((item, index) => {
@@ -162,7 +150,7 @@
         slide.className = `carousel-item ${isActive ? 'active' : ''}`;
         slide.innerHTML = `
           <div class="card">
-            <iframe class="card-iframe" src="https://www.youtube.com/embed/${videoId}?autoplay=0" allowfullscreen></iframe>
+            <iframe class="card-iframe" id="player-${index}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1" allowfullscreen></iframe>
             <div class="card-body">
               <p class="card-text">${title}</p>
             </div>
@@ -178,6 +166,17 @@
         indicator.className = `active ${isActive ? 'active' : ''}`;
         indicator.style.backgroundImage = `url(${item.snippet.thumbnails.default.url})`; // Use default thumbnail
         videoIndicators.appendChild(indicator);
+      });
+
+      // Add event listener for indicator clicks to play video
+      videoIndicators.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-bs-slide-to]');
+        if (button) {
+          const slideTo = parseInt(button.getAttribute('data-bs-slide-to'));
+          const bootstrapCarousel = new bootstrap.Carousel(carousel);
+          bootstrapCarousel.to(slideTo); // Navigate to the slide
+          if (players[slideTo]) players[slideTo].playVideo(); // Play the video
+        }
       });
     }
 
