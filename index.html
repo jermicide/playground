@@ -1,36 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quick Pins - Wrestling Videos</title>
+  <title>Lakey Wrestling</title>
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <!-- YouTube IFrame Player API -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <style>
+    /* Background image styles with Owasso Rams theme */
+    .page-background {
+      background-image: url('owassorams.webp');
+      /* Adjust path if needed */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      /* Optional: Keeps background fixed */
+    }
+
+    /* Overlay for readability */
+    .page-background::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      /* Semi-transparent black overlay */
+      z-index: -1;
+    }
+
     /* Carousel custom styles for full-width hero */
     .carousel-inner {
       padding: 20px;
+      position: relative;
+      z-index: 1;
+      /* Ensure content is above overlay */
     }
+
     .carousel-item {
       transition: transform 0.5s ease-in-out;
     }
+
     /* Full-width hero card */
     .carousel-item .card {
-      width: 100%; /* Full width of container */
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for hero effect */
+      width: 100%;
+      /* Full width of container */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      /* Subtle shadow for hero effect */
     }
+
     .carousel-item .card-body {
       padding: 20px;
-      background: #f8f9fa; /* Light background for contrast */
+      background: #f8f9fa;
+      /* Light background for contrast */
     }
+
     /* Embedded video iframe styling */
     .carousel-item .card-iframe {
       width: 100%;
-      height: 500px; /* Increased height for full-width hero effect */
+      height: 500px;
+      /* Increased height for full-width hero effect */
       border: none;
     }
+
     /* Carousel indicators with 50% bigger thumbnails */
     .carousel-indicators {
       position: relative;
@@ -38,81 +76,109 @@
       margin-bottom: 0;
       justify-content: center;
       flex-wrap: nowrap;
-      overflow-x: auto; /* Horizontal scroll for many indicators */
+      overflow-x: auto;
+      /* Horizontal scroll for many indicators */
       white-space: nowrap;
     }
+
     .carousel-indicators [data-bs-target] {
-      width: 150px; /* 50% bigger (100px * 1.5) */
-      height: 90px; /* 50% bigger (60px * 1.5) */
+      width: 150px;
+      /* 50% bigger (100px * 1.5) */
+      height: 90px;
+      /* 50% bigger (60px * 1.5) */
       background-size: cover;
       background-position: center;
-      border: 3px solid #fff; /* Thicker border */
-      border-radius: 6px; /* Slightly rounder corners */
+      border: 3px solid #fff;
+      /* Thicker border */
+      border-radius: 6px;
+      /* Slightly rounder corners */
       margin: 0 8px;
       cursor: pointer;
       opacity: 0.5;
-      transition: opacity 0.3s; /* Smooth hover effect */
+      transition: opacity 0.3s;
+      /* Smooth hover effect */
     }
+
     .carousel-indicators [data-bs-target]:hover {
-      opacity: 0.8; /* Highlight on hover */
+      opacity: 0.8;
+      /* Highlight on hover */
     }
+
     .carousel-indicators .active {
       opacity: 1;
-      border-color: #007bff; /* Highlight active indicator */
+      border-color: #007bff;
+      /* Highlight active indicator */
     }
-    h1, h2 {
-      text-align: center;
-      padding: 20px 0;
+
+    h1,
+    h2 {
+      position: relative;
+      z-index: 1;
+      /* Ensure text is above overlay */
+      color: #fff;
+      /* White text for contrast */
+    }
+
+    h2 {
+      color: #fff;
+      /* Ensure Instagram header matches */
     }
   </style>
   <script>
-    document.addEventListener('juicer:feedLoaded', 
-        function(event) {
-            console.log('hey');
-            const feedContainer = document.querySelector('.juicer-feed.classic');
-            if (feedContainer && feedContainer.classList.contains('classic')) {
-                feedContainer.classList.remove('classic');
-                console.log('Removed .classic class from .juicer-feed');
-            }
-        });
+    document.addEventListener('juicer:feedLoaded',
+      function (event) {
+        console.log('hey');
+        const feedContainer = document.querySelector('.juicer-feed.classic');
+        if (feedContainer && feedContainer.classList.contains('classic')) {
+          feedContainer.classList.remove('classic');
+          console.log('Removed .classic class from .juicer-feed');
+        }
+      });
   </script>
 </head>
-<body>
-  <h1 class="display-4 fw-bold">QUICK PINS</h1>
 
-  <!-- YouTube Video Carousel -->
-  <div id="video-list" class="video-list container">
-    <div id="videoCarousel" class="carousel slide">
-      <div class="carousel-inner" id="video-row">
-        <!-- Videos will be inserted here -->
+<body>
+  <div class="page-background container-fluid">
+    <h1 class="display-4 fw-bold text-center m-5 p-5">Lakey Wrestling</h1>
+    <!-- YouTube Video Carousel -->
+    <div id="video-list" class="video-list container mt-5 pt-5">
+      <div id="videoCarousel" class="carousel slide">
+        <div class="carousel-inner" id="video-row">
+          <!-- Videos will be inserted here -->
+        </div>
+        <!-- Carousel Indicators with Bigger Thumbnails -->
+        <div class="carousel-indicators" id="video-indicators"></div>
+        <!-- Carousel Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#videoCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
-      <!-- Carousel Indicators with Bigger Thumbnails -->
-      <div class="carousel-indicators" id="video-indicators"></div>
-      <!-- Carousel Controls -->
-      <button class="carousel-control-prev" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#videoCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
+    </div>    
   </div>
+
 
   <!-- Instagram Feed via Juicer.io -->
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h2 class="text-center mb-4" style="color: #fff;">Instagram Feed</h2>
+        <h2 class="text-center mb-4" style="color: #fff;">Socials Feed</h2>
         <!-- Juicer embed code -->
-        <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
+        <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async
+          defer></script>
       </div>
     </div>
   </div>
 
+
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
 
   <!-- YouTube Video Fetch, Carousel, and Playback Script -->
   <script>
@@ -152,7 +218,7 @@
           <div class="card">
             <iframe class="card-iframe" id="player-${index}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1" allowfullscreen></iframe>
             <div class="card-body">
-              <p class="card-text">${title}</p>
+              <p class="card-text text-center">${title}</p>
             </div>
           </div>
         `;
@@ -183,4 +249,5 @@
     window.onload = loadVideos;
   </script>
 </body>
+
 </html>
