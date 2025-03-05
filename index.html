@@ -10,12 +10,14 @@
   </style>
 </head>
 <body>
-  <h1>Wrestling Videos</h1>
+  <h1>QUICK PINS</h1>
+
+
   <div id="video-list" class="video-list"></div>
 
   <script>
     async function loadVideos() {
-      const response = await fetch('/api/getVideos?playlistId=PLx3fyeqr0GmsZQ1pJrfCF8bo9O9zckJsq');
+      const response = await fetch('/api/getVideos?playlistId=PLx3fyeqr0GmvVB8Vlh0b8W3uHSRYzWKr0');
       const data = await response.json();
       const videoList = document.getElementById('video-list');
 
