@@ -44,8 +44,13 @@ module.exports = async function (context, req) {
     const response = await fetch(url);
     const data = await response.json();
 
+    // Convert data to string and calculate length
+    const dataString = JSON.stringify(data);
+    const dataBuffer = Buffer.from(dataString);
+    const contentLength = dataBuffer.length;
+
     // Update cache
-    await blobClient.upload(JSON.stringify(data), {
+    await blobClient.upload(dataBuffer, contentLength, {
       blobHTTPHeaders: { blobContentType: 'application/json' }
     });
 
@@ -55,10 +60,10 @@ module.exports = async function (context, req) {
       body: data
     };
   } catch (error) {
-    context.log.error('Error:', error);
+    context.log.error('Failed to fetch or cache videos Error:', error);
     context.res = {
       status: 500,
-      body: { error: `Failed to fetch or cache videos ${error}` }
+      body: { error: 'Failed to fetch or cache videos', details: error.message }
     };
   }
 };
