@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lakey Wrestling</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -10,22 +10,16 @@
   <script src="https://www.youtube.com/iframe_api"></script>
   <link href="https://fonts.cdnfonts.com/css/bebas-neue" rel="stylesheet">
   <style>
-    /* Ensure full height and remove gray bar */
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    /* Background image styles with Owasso Rams theme (no parallax) */
+    /* Background image styles with Owasso Rams theme and parallax effect */
     .page-background {
       background-image: url('owassorams.webp'); /* Adjust path if needed (e.g., assets/owassorams.webp) */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      height: 100vh; /* Full viewport height */
-      min-height: 100%; /* Ensure it fills the page */
+      height: 100%; /* Ensure full height */
       position: relative;
     }
+
     /* Overlay for readability */
     .page-background::before {
       content: '';
@@ -33,11 +27,11 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 100vh; /* Match viewport height */
-      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)); /* Gradient overlay */
+      height: 100%;
+      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)); /* Gradient overlay for smoother parallax */
       z-index: -1;
     }
-    /* Outlined header text with black shadow and Bebas Neue font */
+    /* Outlined header text with black shadow */
     h1, h2 {
       position: relative;
       z-index: 1; /* Ensure text is above overlay */
@@ -47,8 +41,7 @@
         1px -1px 0 #000000,
         -1px 1px 0 #000000,
         1px 1px 0 #000000; /* Black outline effect */
-      font-family: 'Bebas Neue', sans-serif;
-      letter-spacing: 2px; /* Match logo spacing */
+        font-family: 'Bebas Neue', sans-serif;
     }
     /* Carousel custom styles for full-width hero */
     .carousel-inner {
@@ -105,7 +98,7 @@
     }
     /* Move video down to show more background */
     #video-list {
-      padding-top: 800px; /* Increased to show more background */
+      padding-top: 600px; /* Increased to show more background */
     }
     /* Responsive adjustments for title and video spacing */
     @media (max-width: 767.98px) {
@@ -134,10 +127,10 @@
   <div class="page-background container-fluid">
     <div class="row">
       <div class="col-12">
-        <h1 class="display-4 fw-bold text-center p-5">Lakey Wrestling</h1>
+        <h1 class="display-4 fw-bold text-center">Lakey Wrestling</h1>
       </div>
     </div>
-    <div class="row m-5 p-5">
+    <div class="row">
       <div class="col-12">
         <div id="video-list" class="container">
           <div id="videoCarousel" class="carousel slide">
@@ -160,17 +153,14 @@
       </div>
     </div>
   </div>
-
-  <!-- Instagram Feed via Juicer.io -->
-  <div class="container mt-5">
-    <div class="row mt-5">
-      <div class="col-12 mt-5">
-        <h2 class="text-center mb-4" style="color: #fff;">Socials</h2>
-        <!-- Juicer embed code -->
-        <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
-      </div>
+  <div class="row mt-5">
+    <div class="col-12 mt-5">
+      <h2 class="text-center mb-4" style="color: #fff;">Socials</h2>
+      <!-- Juicer embed code -->
+      <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
     </div>
   </div>
+
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
