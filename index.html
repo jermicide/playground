@@ -7,8 +7,8 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <style>
-/* Carousel custom styles */
-.carousel-inner {
+    /* Carousel custom styles for hero size */
+    .carousel-inner {
       padding: 20px;
     }
     .carousel-item {
@@ -18,66 +18,62 @@
       width: 100%;
       height: auto;
     }
-    /* Carousel strip with 3 items */
-    .carousel-inner {
-      display: flex;
-    }
-    .carousel-item {
-      flex: 0 0 auto;
-      width: 300px; /* Base width for non-active items */
-    }
-    .carousel-item.active {
-      width: 600px; /* Twice as large for active item */
-      transform: scale(1.0); /* Ensure it stays centered */
-    }
+    /* Hero-sized card */
     .carousel-item .card {
       width: 100%;
+      max-width: 800px; /* Hero size */
       margin: 0 auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for hero effect */
     }
     .carousel-item .card-img-top {
       object-fit: cover;
-      height: 200px; /* Fixed height for consistency */
+      height: 450px; /* Hero height */
     }
     .carousel-item .card-body {
-      padding: 10px;
+      padding: 20px;
+      background: #f8f9fa; /* Light background for contrast */
     }
-    /* Ensure 3 items are visible */
-    @media (min-width: 768px) {
-      .carousel-inner {
-        width: 1800px; /* 600px (active) + 2 * 300px (others) */
-        margin-left: auto;
-        margin-right: auto;
-      }
+    /* Carousel indicators with thumbnails */
+    .carousel-indicators {
+      position: relative;
+      margin-top: 10px;
+      margin-bottom: 0;
+      justify-content: center;
+      flex-wrap: nowrap;
+      overflow-x: auto; /* Horizontal scroll for many indicators */
+      white-space: nowrap;
     }
-    /* Responsive adjustments */
-    @media (max-width: 767.98px) {
-      .carousel-item {
-        width: 100%; /* Full width on mobile */
-      }
-      .carousel-item.active {
-        width: 100%; /* Active still full width */
-      }
-      .carousel-inner {
-        width: 100%; /* Single item visible */
-      }
+    .carousel-indicators [data-bs-target] {
+      width: 60px; /* Smaller thumbnail size */
+      height: 40px;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #fff;
+      border-radius: 4px;
+      margin: 0 5px;
+      cursor: pointer;
+      opacity: 0.5;
     }
-
+    .carousel-indicators .active {
+      opacity: 1;
+      border-color: #007bff; /* Highlight active indicator */
+    }
     h1, h2 {
       text-align: center;
       padding: 20px 0;
     }
+
   </style>
   <script>
-      document.addEventListener('juicer:feedLoaded', 
-          function(event) {
-              console.log('hey');
-              const feedContainer = document.querySelector('.juicer-feed.classic');
-              if (feedContainer && feedContainer.classList.contains('classic')) {
-                  feedContainer.classList.remove('classic');
-                  console.log('Removed .classic class from .juicer-feed');
-              }
-          });
-    </script>
+    document.addEventListener('juicer:feedLoaded', 
+        function(event) {
+            const feedContainer = document.querySelector('.juicer-feed.classic');
+            if (feedContainer && feedContainer.classList.contains('classic')) {
+                feedContainer.classList.remove('classic');
+                console.log('Removed .classic class from .juicer-feed');
+            }
+        });
+  </script>
 </head>
 <body>
   <h1 class="display-4 fw-bold">QUICK PINS</h1>
@@ -88,6 +84,8 @@
       <div class="carousel-inner" id="video-row">
         <!-- Videos will be inserted here -->
       </div>
+      <!-- Carousel Indicators with Thumbnails -->
+      <div class="carousel-indicators" id="video-indicators"></div>
       <!-- Carousel Controls -->
       <button class="carousel-control-prev" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -104,11 +102,9 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <div class="juicer-feed">
-          <h2 class="text-center mb-4" style="color: #fff;">Instagram Feed</h2>
-          <!-- Juicer embed code -->
-          <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
-        </div>
+        <h2 class="text-center mb-4" style="color: #fff;">Instagram Feed</h2>
+        <!-- Juicer embed code -->
+        <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
       </div>
     </div>
   </div>
@@ -122,15 +118,18 @@
       const response = await fetch('/api/getVideos?playlistId=PLx3fyeqr0GmvVB8Vlh0b8W3uHSRYzWKr0');
       const data = await response.json();
       const videoRow = document.getElementById('video-row');
+      const videoIndicators = document.getElementById('video-indicators');
 
+      // Create a slide for each video (1 hero-sized item per slide)
       data.items.forEach((item, index) => {
         const videoId = item.snippet.resourceId.videoId;
         const title = item.snippet.title;
         const thumbnail = item.snippet.thumbnails.medium.url;
+        const isActive = index === 0; // First item is active
 
-        const videoItem = document.createElement('div');
-        videoItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-        videoItem.innerHTML = `
+        const slide = document.createElement('div');
+        slide.className = `carousel-item ${isActive ? 'active' : ''}`;
+        slide.innerHTML = `
           <div class="card">
             <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">
               <img src="${thumbnail}" class="card-img-top" alt="${title}">
@@ -140,7 +139,16 @@
             </a>
           </div>
         `;
-        videoRow.appendChild(videoItem);
+        videoRow.appendChild(slide);
+
+        // Add indicator with thumbnail
+        const indicator = document.createElement('button');
+        indicator.type = 'button';
+        indicator.setAttribute('data-bs-target', '#videoCarousel');
+        indicator.setAttribute('data-bs-slide-to', index);
+        indicator.className = `active ${isActive ? 'active' : ''}`;
+        indicator.style.backgroundImage = `url(${item.snippet.thumbnails.default.url})`; // Use default thumbnail
+        videoIndicators.appendChild(indicator);
       });
     }
 
