@@ -146,6 +146,20 @@
       padding-top: 50px;
       /* Minimal padding to avoid overlap */
     }
+    .carousel-indicators [data-bs-target] {
+    width: 150px;
+    height: 90px;
+    }
+    @media (max-width: 767.98px) {
+      .carousel-indicators [data-bs-target] {
+        width: 75px; /* 50% smaller */
+        height: 45px;
+        margin: 0 4px; /* Less spacing */
+      }
+      .carousel-indicators {
+        padding: 0 10px; /* Prevent overflow */
+      }
+    }
 
     /* Responsive adjustments for title and video spacing */
     @media (max-width: 767.98px) {
@@ -155,8 +169,10 @@
       }
 
       #video-list {
-        padding-top: 50px;
-        /* Minimal padding for mobile */
+        padding-top: 20px; /* Less padding */
+      }
+      .row.m-5 {
+        margin: 1rem !important; /* Override .m-5 for mobile */
       }
     }
 
