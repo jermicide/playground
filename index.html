@@ -1,41 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lakey Wrestling</title>
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <!-- YouTube IFrame Player API -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <link href="https://fonts.cdnfonts.com/css/bebas-neue" rel="stylesheet">
   <style>
     /* Ensure full height and remove gray bar */
-    html,
-    body {
+    html, body {
       height: 100%;
       margin: 0;
       padding: 0;
-      background-color: black;
-      /* Dark base */
+      background-color: black; /* Dark base */
     }
-
     /* Background image styles with Owasso Rams theme and parallax effect */
     .page-background {
-      background-image: url('owassorams.webp');
-      /* Adjust path if needed (e.g., assets/owassorams.webp) */
+      background-image: url('owassorams.webp'); /* Adjust path if needed */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-attachment: fixed;
-      /* Parallax effect */
-      height: 100%;
-      /* Ensure full height */
+      background-attachment: fixed; /* Parallax effect */
+      height: 100%; /* Ensure full height */
       position: relative;
     }
-
     /* Overlay for readability with Owasso Rams red tones */
     .page-background::before {
       content: '';
@@ -44,145 +35,45 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(rgba(124, 0, 0, 0.3), rgba(145, 0, 0, 0.7));
-      /* Red gradient overlay */
+      background: linear-gradient(rgba(124, 0, 0, 0.3), rgba(145, 0, 0, 0.7)); /* Red gradient overlay */
       z-index: -1;
     }
-
     /* Outlined header text with black shadow and Bebas Neue font */
-    h1,
-    h2 {
+    h1, h2 {
       position: relative;
-      z-index: 1;
-      /* Ensure text is above overlay */
-      color: #fff;
-      /* White text */
-      text-shadow:
+      z-index: 1; /* Ensure text is above overlay */
+      color: #fff; /* White text */
+      text-shadow: 
         -1px -1px 0 #000000,
         1px -1px 0 #000000,
         -1px 1px 0 #000000,
-        1px 1px 0 #000000;
-      /* Black outline effect */
+        1px 1px 0 #000000; /* Black outline effect */
       font-family: 'Bebas Neue', sans-serif;
     }
-
     /* Carousel custom styles for full-width hero */
     .carousel-inner {
       padding: 20px;
       position: relative;
-      z-index: 1;
-      /* Ensure content is above overlay */
+      z-index: 1; /* Ensure content is above overlay */
     }
-
     .carousel-item {
       transition: transform 0.5s ease-in-out;
     }
-
     /* Full-width hero card within container */
     .carousel-item .card {
-      width: 100%;
-      /* Full width of container */
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      /* Subtle shadow for hero effect */
+      width: 100%; /* Full width of container */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for hero effect */
     }
-
     .carousel-item .card-body {
       padding: 20px;
-      background: #f8f9fa;
-      /* Light background for contrast */
+      background: #f8f9fa; /* Light background for contrast */
     }
-
-    /* Embedded video iframe styling */
-    .carousel-item .card-iframe {
-      width: 100%;
-      height: 500px;
-      /* Increased height for full-width hero effect */
-      border: none;
-    }
-
-    /* Carousel indicators with 50% bigger thumbnails */
-    .carousel-indicators {
-      position: relative;
-      margin-top: 10px;
-      margin-bottom: 0;
-      justify-content: center;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      /* Horizontal scroll for many indicators */
-      white-space: nowrap;
-    }
-
-    .carousel-indicators [data-bs-target] {
-      width: 150px;
-      /* 50% bigger (100px * 1.5) */
-      height: 90px;
-      /* 50% bigger (60px * 1.5) */
-      background-size: cover;
-      background-position: center;
-      border: 3px solid #fff;
-      /* Thicker border */
-      border-radius: 6px;
-      /* Slightly rounder corners */
-      margin: 0 8px;
-      cursor: pointer;
-      opacity: 0.5;
-      transition: opacity 0.3s;
-      /* Smooth hover effect */
-    }
-
-    .carousel-indicators [data-bs-target]:hover {
-      opacity: 0.8;
-      /* Highlight on hover */
-    }
-
-    .carousel-indicators .active {
-      opacity: 1;
-      border-color: #007bff;
-      /* Highlight active indicator */
-    }
-
-    /* Move video down to show more background */
-    #video-list {
-      padding-top: 50px;
-      /* Minimal padding to avoid overlap */
-    }
-    .carousel-indicators [data-bs-target] {
-    width: 150px;
-    height: 90px;
-    }
-    @media (max-width: 767.98px) {
-      .carousel-indicators [data-bs-target] {
-        width: 75px; /* 50% smaller */
-        height: 45px;
-        margin: 0 4px; /* Less spacing */
-      }
-      .carousel-indicators {
-        padding: 0 10px; /* Prevent overflow */
-      }
-    }
-
-    /* Responsive adjustments for title and video spacing */
-    @media (max-width: 767.98px) {
-      h1 {
-        margin: 2rem 0 !important;
-        padding: 1rem 0 !important;
-      }
-
-      #video-list {
-        padding-top: 20px; /* Less padding */
-      }
-      .row.m-5 {
-        margin: 1rem !important; /* Override .m-5 for mobile */
-      }
-    }
-
+    /* Video container for responsive aspect ratio */
     .video-container {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%;
-      /* 9/16 = 0.5625 for 16:9 aspect ratio */
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
     }
-
     .card-iframe {
       position: absolute;
       top: 0;
@@ -191,20 +82,85 @@
       height: 100%;
       border: none;
     }
+    /* Carousel indicators with 50% bigger thumbnails */
+    .carousel-indicators {
+      position: relative;
+      margin-top: 10px;
+      margin-bottom: 0;
+      justify-content: center;
+      flex-wrap: nowrap;
+      overflow-x: auto; /* Horizontal scroll for many indicators */
+      white-space: nowrap;
+    }
+    .carousel-indicators [data-bs-target] {
+      width: 150px; /* 50% bigger (100px * 1.5) */
+      height: 90px; /* 50% bigger (60px * 1.5) */
+      background-size: cover;
+      background-position: center;
+      border: 3px solid #fff; /* Thicker border */
+      border-radius: 6px; /* Slightly rounder corners */
+      margin: 0 8px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.3s; /* Smooth hover effect */
+    }
+    .carousel-indicators [data-bs-target]:hover {
+      opacity: 0.8; /* Highlight on hover */
+    }
+    .carousel-indicators .active {
+      opacity: 1;
+      border-color: #007bff; /* Highlight active indicator */
+    }
+    /* Move video down to show more background */
+    #video-list {
+      padding-top: 50px; /* Minimal padding to avoid overlap */
+    }
+    /* Responsive adjustments for mobile (no margins) */
+    @media (max-width: 767.98px) {
+      h1 {
+        margin: 2rem 0 !important;
+        padding: 1rem 0 !important;
+      }
+      .row.m-5 {
+        margin: 0 !important; /* Remove margins */
+      }
+      #video-list {
+        padding-top: 20px; /* Minimal top padding, adjust to 0 if preferred */
+        margin: 0;
+      }
+      .carousel-inner {
+        padding: 0;
+        margin: 0;
+      }
+      .carousel-item .card {
+        margin: 0;
+      }
+      .container {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      .carousel-indicators [data-bs-target] {
+        width: 75px;
+        height: 45px;
+        margin: 0 4px;
+      }
+      .carousel-indicators {
+        padding: 0 10px;
+      }
+    }
   </style>
   <script>
-    document.addEventListener('juicer:feedLoaded',
-      function (event) {
-        console.log('hey');
-        const feedContainer = document.querySelector('.juicer-feed.classic');
-        if (feedContainer && feedContainer.classList.contains('classic')) {
-          feedContainer.classList.remove('classic');
-          console.log('Removed .classic class from .juicer-feed');
-        }
-      });
+    document.addEventListener('juicer:feedLoaded', 
+        function(event) {
+            console.log('hey');
+            const feedContainer = document.querySelector('.juicer-feed.classic');
+            if (feedContainer && feedContainer.classList.contains('classic')) {
+                feedContainer.classList.remove('classic');
+                console.log('Removed .classic class from .juicer-feed');
+            }
+        });
   </script>
 </head>
-
 <body>
   <div class="page-background container">
     <div class="row">
@@ -239,15 +195,12 @@
     <div class="col-12 mt-5">
       <h2 class="text-center mb-4" style="color: #fff;">Socials</h2>
       <!-- Juicer embed code -->
-      <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async
-        defer></script>
+      <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
     </div>
   </div>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
   <!-- YouTube Video Fetch, Carousel, and Playback Script -->
   <script>
@@ -320,5 +273,4 @@
     window.onload = loadVideos;
   </script>
 </body>
-
 </html>
