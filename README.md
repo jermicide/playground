@@ -7,7 +7,7 @@ free static website in azure with nodejs function apis, ssl certs, custom domain
 * website updates auto-deploy with every push to ```main``` branch
 
 
-
+***remember to az login first***
 ```
     az staticwebapp create \
         --name "$NAME" \
