@@ -157,6 +157,7 @@ async function fetchVideos() {
     let pageToken = null;
     let pageLoadedFromCache = false;
 
+    // Fetch YouTube playlist videos
     do {
       const params = new URLSearchParams({
         playlistId: PLAYLIST_ID,
@@ -179,6 +180,34 @@ async function fetchVideos() {
       pageLoadedFromCache = pageLoadedFromCache || Boolean(data.fromCache);
       pageToken = data.nextPageToken || null;
     } while (pageToken);
+
+    // Fetch social feed videos
+    try {
+      const socialResponse = await fetch('/api/getSocials?maxResults=24');
+      const socialData = await socialResponse.json();
+
+      if (socialResponse.ok && Array.isArray(socialData.items)) {
+        const socialVideos = socialData.items
+          .filter((item) => item.videoId)
+          .map((item) => ({
+            videoId: item.videoId,
+            title: item.title || 'Untitled video',
+            description: item.caption || '',
+            publishedAt: item.timestamp || null,
+            channelTitle: item.author || item.platform || '',
+            thumbnails: {
+              default: item.mediaUrl || '',
+              medium: item.mediaUrl || '',
+              high: item.mediaUrl || ''
+            }
+          }));
+        
+        allVideos.push(...socialVideos);
+        pageLoadedFromCache = pageLoadedFromCache || Boolean(socialData.fromCache);
+      }
+    } catch (socialError) {
+      console.warn('Failed to fetch social videos:', socialError);
+    }
 
     videos = allVideos;
     if (videos.length === 0) {
