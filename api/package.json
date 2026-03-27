@@ -1,8 +1,11 @@
 {
-    "name": "playground-functions",
-    "version": "1.0.0",
-    "dependencies": {
-      "node-fetch": "^2.6.1",
-      "@azure/storage-blob": "^12.17.0"
-    }
+  "name": "playground-functions",
+  "version": "1.0.0",
+  "scripts": {
+    "smoke:test": "node scripts/smoke-test.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1",
+    "@azure/storage-blob": "^12.17.0"
+  }
 }

@@ -4,30 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lakey Wrestling</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <!-- YouTube IFrame Player API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
   <link href="https://fonts.cdnfonts.com/css/bebas-neue" rel="stylesheet">
+  <script src="https://www.youtube.com/iframe_api"></script>
   <style>
-    /* Ensure full height and remove gray bar */
+    :root {
+      --overlay-start: rgba(79, 0, 0, 0.35);
+      --overlay-end: rgba(24, 0, 0, 0.82);
+      --surface: rgba(20, 20, 20, 0.78);
+      --surface-strong: rgba(12, 12, 12, 0.9);
+      --accent: #ef4f4f;
+      --accent-strong: #d81717;
+      --text: #f5f5f5;
+      --muted: #cdc7c7;
+      --border-soft: rgba(255, 255, 255, 0.15);
+    }
+
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
-      background-color: black; /* Dark base */
+      background-color: #000;
+      color: var(--text);
     }
-    /* Background image styles with Owasso Rams theme and parallax effect */
+
     .page-background {
-      background-image: url('owassorams.webp'); /* Adjust path if needed */
+      background-image: url('owassorams.webp');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-attachment: fixed; /* Parallax effect */
-      height: 100%; /* Ensure full height */
+      background-attachment: fixed;
+      min-height: 100%;
       position: relative;
+      padding-bottom: 4rem;
     }
-    /* Overlay for readability with Owasso Rams red tones */
+
     .page-background::before {
       content: '';
       position: fixed;
@@ -35,243 +46,713 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(rgba(124, 0, 0, 0.3), rgba(145, 0, 0, 0.7)); /* Red gradient overlay */
+      background: radial-gradient(circle at 20% 20%, rgba(255, 81, 81, 0.2), transparent 40%),
+        linear-gradient(var(--overlay-start), var(--overlay-end));
       z-index: -1;
     }
-    /* Outlined header text with black shadow and Bebas Neue font */
+
     h1, h2 {
-      position: relative;
-      z-index: 1; /* Ensure text is above overlay */
-      color: #fff; /* White text */
-      text-shadow: 
+      color: #fff;
+      text-shadow:
         -1px -1px 0 #000000,
         1px -1px 0 #000000,
         -1px 1px 0 #000000,
-        1px 1px 0 #000000; /* Black outline effect */
+        1px 1px 0 #000000;
       font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 0.04em;
     }
-    /* Carousel custom styles for full-width hero */
-    .carousel-inner {
-      padding: 20px;
-      position: relative;
-      z-index: 1; /* Ensure content is above overlay */
+
+    .section-shell {
+      background: linear-gradient(165deg, var(--surface), var(--surface-strong));
+      border: 1px solid var(--border-soft);
+      border-radius: 1rem;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(4px);
+      padding: 1rem;
     }
-    .carousel-item {
-      transition: transform 0.5s ease-in-out;
-    }
-    /* Full-width hero card within container */
-    .carousel-item .card {
-      width: 100%; /* Full width of container */
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for hero effect */
-    }
-    .carousel-item .card-body {
-      padding: 20px;
-      background: #f8f9fa; /* Light background for contrast */
-    }
-    /* Video container for responsive aspect ratio */
-    .video-container {
+
+    .spotlight-frame {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      padding-bottom: 56.25%;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #000;
     }
-    .card-iframe {
+
+    #spotlight-player,
+    #spotlight-player iframe {
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
-      border: none;
     }
-    /* Carousel indicators with 50% bigger thumbnails */
-    .carousel-indicators {
-      position: relative;
-      margin-top: 10px;
-      margin-bottom: 0;
+
+    .spotlight-meta {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .spotlight-title {
+      margin: 0;
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .spotlight-sub {
+      margin: 0.35rem 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .rail-wrap {
+      margin-top: 1rem;
+      padding: 0.5rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .video-rail {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(190px, 220px);
+      gap: 0.75rem;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      padding-bottom: 0.25rem;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+    }
+
+    .thumb-button {
+      scroll-snap-align: start;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.65rem;
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      padding: 0;
+      text-align: left;
+      transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    .thumb-button:hover,
+    .thumb-button:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(239, 79, 79, 0.25);
+      outline: none;
+    }
+
+    .thumb-button.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(239, 79, 79, 0.28);
+    }
+
+    .thumb-media {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 0.52rem 0.52rem 0 0;
+      display: block;
+    }
+
+    .thumb-copy {
+      padding: 0.5rem 0.65rem 0.65rem;
+    }
+
+    .thumb-title {
+      font-size: 0.87rem;
+      line-height: 1.25;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .thumb-date {
+      color: var(--muted);
+      font-size: 0.77rem;
+      margin-top: 0.25rem;
+    }
+
+    .feed-status {
+      min-height: 1.6rem;
+      margin-top: 0.8rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .retry-wrap {
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .btn-retry {
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      background: transparent;
+      border-radius: 999px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-retry:hover,
+    .btn-retry:focus-visible {
+      border-color: var(--accent);
+      color: #fff;
+      outline: none;
+    }
+
+    .skeleton {
+      animation: skeletonPulse 1.2s ease-in-out infinite;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+      background-size: 200% 100%;
+    }
+
+    .video-skeleton {
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      border-radius: 0.65rem;
+      overflow: hidden;
+    }
+
+    .video-skeleton .media {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-skeleton .line {
+      height: 0.7rem;
+      margin: 0.55rem;
+      border-radius: 0.35rem;
+    }
+
+    .social-skeleton {
+      grid-column: span 4;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+
+    .social-skeleton .media {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+    }
+
+    .social-skeleton .line {
+      height: 0.7rem;
+      margin: 0.6rem;
+      border-radius: 0.35rem;
+    }
+
+    @keyframes skeletonPulse {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .social-card {
+      grid-column: span 4;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: transform 140ms ease, border-color 140ms ease;
+    }
+
+    .social-card:hover,
+    .social-card:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .social-image {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      display: block;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .social-copy {
+      padding: 0.75rem;
+    }
+
+    .social-title {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.3;
+      color: #fff;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .social-meta {
+      margin-top: 0.45rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .load-more-wrap {
+      margin-top: 0.85rem;
+      display: flex;
       justify-content: center;
-      flex-wrap: nowrap;
-      overflow-x: auto; /* Horizontal scroll for many indicators */
-      white-space: nowrap;
     }
-    .carousel-indicators [data-bs-target] {
-      width: 150px; /* 50% bigger (100px * 1.5) */
-      height: 90px; /* 50% bigger (60px * 1.5) */
-      background-size: cover;
-      background-position: center;
-      border: 3px solid #fff; /* Thicker border */
-      border-radius: 6px; /* Slightly rounder corners */
-      margin: 0 8px;
-      cursor: pointer;
-      opacity: 0.5;
-      transition: opacity 0.3s; /* Smooth hover effect */
+
+    .btn-feed {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      border: 0;
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
     }
-    .carousel-indicators [data-bs-target]:hover {
-      opacity: 0.8; /* Highlight on hover */
+
+    .btn-feed:disabled {
+      opacity: 0.45;
     }
-    .carousel-indicators .active {
-      opacity: 1;
-      border-color: #007bff; /* Highlight active indicator */
+
+    @media (max-width: 991.98px) {
+      .social-card,
+      .social-skeleton {
+        grid-column: span 6;
+      }
     }
-    /* Move video down to show more background */
-    #video-list {
-      padding-top: 50px; /* Minimal padding to avoid overlap */
-    }
-    /* Responsive adjustments for mobile (no margins) */
+
     @media (max-width: 767.98px) {
       h1 {
-        margin: 2rem 0 !important;
-        padding: 1rem 0 !important;
+        margin: 2rem 0 1rem !important;
       }
-      .row.m-5 {
-        margin: 0 !important; /* Remove margins */
+
+      .page-background.container {
+        padding-left: 0.6rem;
+        padding-right: 0.6rem;
       }
-      #video-list {
-        padding-top: 20px; /* Minimal top padding, adjust to 0 if preferred */
-        margin: 0;
+
+      .section-shell {
+        padding: 0.75rem;
       }
-      .carousel-inner {
-        padding: 0;
-        margin: 0;
+
+      .video-rail {
+        grid-auto-columns: minmax(160px, 180px);
       }
-      .carousel-item .card {
-        margin: 0;
-      }
-      .container {
-        padding-left: 0;
-        padding-right: 0;
-      }
-      .carousel-indicators [data-bs-target] {
-        width: 75px;
-        height: 45px;
-        margin: 0 4px;
-      }
-      .carousel-indicators {
-        padding: 0 10px;
+
+      .social-card,
+      .social-skeleton {
+        grid-column: span 12;
       }
     }
   </style>
-  <script>
-    document.addEventListener('juicer:feedLoaded', 
-        function(event) {
-            console.log('hey');
-            const feedContainer = document.querySelector('.juicer-feed.classic');
-            if (feedContainer && feedContainer.classList.contains('classic')) {
-                feedContainer.classList.remove('classic');
-                console.log('Removed .classic class from .juicer-feed');
-            }
-        });
-  </script>
 </head>
 <body>
   <div class="page-background container">
     <div class="row">
       <div class="col-12">
-        <h1 class="display-1 fw-bold text-center">Lakey Wrestling</h1>
+        <h1 class="display-1 fw-bold text-center mt-4">Lakey Wrestling</h1>
       </div>
     </div>
-    <div class="row m-5">
+
+    <div class="row mt-4">
       <div class="col-12">
-        <div id="video-list" class="container">
-          <div id="videoCarousel" class="carousel slide">
-            <div class="carousel-inner" id="video-row">
-              <!-- Videos will be inserted here -->
-            </div>
-            <!-- Carousel Indicators with Bigger Thumbnails -->
-            <div class="carousel-indicators" id="video-indicators"></div>
-            <!-- Carousel Controls -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#videoCarousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>
+        <section class="section-shell" aria-labelledby="videos-heading">
+          <h2 id="videos-heading" class="text-center mb-3">Video Spotlight</h2>
+          <div class="spotlight-frame">
+            <div id="spotlight-player" aria-label="Featured video player"></div>
           </div>
-        </div>
+          <div class="spotlight-meta">
+            <p class="spotlight-title" id="spotlight-title">Loading videos...</p>
+            <p class="spotlight-sub" id="spotlight-sub">Preparing the latest videos.</p>
+          </div>
+          <div class="rail-wrap">
+            <div class="video-rail" id="video-rail" role="listbox" aria-label="Video thumbnails"></div>
+          </div>
+          <div class="load-more-wrap">
+            <button id="load-more-videos" class="btn btn-feed" type="button">Load More Videos</button>
+          </div>
+          <div class="feed-status" id="video-status" aria-live="polite"></div>
+          <div class="retry-wrap" id="video-retry-wrap">
+            <button id="video-retry" class="btn btn-retry" type="button">Retry Videos</button>
+          </div>
+        </section>
       </div>
     </div>
+
     <div class="row mt-5">
-      <div class="col-12 mt-5">
-        <h2 class="text-center mb-4" style="color: #fff;">Socials</h2>
-        <!-- Juicer embed code -->
-        <script type="text/javascript" src="https://www.juicer.io/embed/jeremy-lakey-sr/embed-code.js?style=night" async defer></script>
+      <div class="col-12">
+        <section class="section-shell" aria-labelledby="social-heading">
+          <h2 id="social-heading" class="text-center mb-3">Social Feed</h2>
+          <div id="social-grid" class="social-grid"></div>
+          <div id="social-status" class="feed-status" aria-live="polite"></div>
+          <div class="retry-wrap" id="social-retry-wrap">
+            <button id="social-retry" class="btn btn-retry" type="button">Retry Social Feed</button>
+          </div>
+        </section>
       </div>
     </div>
-  
   </div>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-  <!-- YouTube Video Fetch, Carousel, and Playback Script -->
   <script>
-    // Global array to store player instances
-    let players = [];
+    const PLAYLIST_ID = 'PLx3fyeqr0GmvVB8Vlh0b8W3uHSRYzWKr0';
+    const VIDEO_PAGE_SIZE = 8;
+    const SOCIAL_PAGE_SIZE = 12;
 
-    function onYouTubeIframeAPIReady() {
-      // Initialize players after API is ready
-      document.querySelectorAll('.card-iframe').forEach((iframe, index) => {
-        players[index] = new YT.Player(iframe, {
-          events: {
-            'onReady': (event) => {
-              if (index === 0) event.target.playVideo(); // Autoplay first video
-            }
-          }
-        });
-      });
+    let videos = [];
+    let activeVideoIndex = 0;
+    let nextPageToken = null;
+    let isLoadingVideos = false;
+    let isYouTubeApiReady = false;
+    let player = null;
+
+    const rail = document.getElementById('video-rail');
+    const videoStatus = document.getElementById('video-status');
+    const socialStatus = document.getElementById('social-status');
+    const loadMoreButton = document.getElementById('load-more-videos');
+    const spotlightTitle = document.getElementById('spotlight-title');
+    const spotlightSub = document.getElementById('spotlight-sub');
+    const socialGrid = document.getElementById('social-grid');
+    const videoRetryWrap = document.getElementById('video-retry-wrap');
+    const socialRetryWrap = document.getElementById('social-retry-wrap');
+    const videoRetryButton = document.getElementById('video-retry');
+    const socialRetryButton = document.getElementById('social-retry');
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
-    async function loadVideos() {
-      const response = await fetch('/api/getVideos?playlistId=PLx3fyeqr0GmvVB8Vlh0b8W3uHSRYzWKr0');
-      const data = await response.json();
-      const videoRow = document.getElementById('video-row');
-      const videoIndicators = document.getElementById('video-indicators');
-      const carousel = document.getElementById('videoCarousel');
+    function formatDate(isoDate) {
+      if (!isoDate) {
+        return 'Unknown date';
+      }
 
-      // Create a slide for each video with embedded player
-      data.items.forEach((item, index) => {
-        const videoId = item.snippet.resourceId.videoId;
-        const title = item.snippet.title;
-        const thumbnail = item.snippet.thumbnails.medium.url;
-        const isActive = index === 0; // First item is active
+      const date = new Date(isoDate);
+      if (Number.isNaN(date.getTime())) {
+        return 'Unknown date';
+      }
 
-        const slide = document.createElement('div');
-        slide.className = `carousel-item ${isActive ? 'active' : ''}`;
-        slide.innerHTML = `
-          <div class="card">
-            <div class="video-container">
-              <iframe class="card-iframe" id="player-${index}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1" allowfullscreen></iframe>
-            </div>
-            <div class="card-body">
-              <p class="card-text text-center">${title}</p>
-            </div>
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(date);
+    }
+
+    function updateVideoStatus(message) {
+      videoStatus.textContent = message;
+    }
+
+    function updateSocialStatus(message) {
+      socialStatus.textContent = message;
+    }
+
+    function setRetryVisibility(type, visible) {
+      if (type === 'videos') {
+        videoRetryWrap.style.display = visible ? 'block' : 'none';
+        return;
+      }
+
+      socialRetryWrap.style.display = visible ? 'block' : 'none';
+    }
+
+    function renderVideoSkeletons() {
+      rail.innerHTML = '';
+      const count = 4;
+      for (let index = 0; index < count; index += 1) {
+        const card = document.createElement('div');
+        card.className = 'video-skeleton';
+        card.innerHTML = `
+          <div class="media skeleton"></div>
+          <div class="line skeleton"></div>
+        `;
+        rail.appendChild(card);
+      }
+    }
+
+    function renderSocialSkeletons() {
+      socialGrid.innerHTML = '';
+      const count = 6;
+      for (let index = 0; index < count; index += 1) {
+        const card = document.createElement('div');
+        card.className = 'social-skeleton';
+        card.innerHTML = `
+          <div class="media skeleton"></div>
+          <div class="line skeleton"></div>
+          <div class="line skeleton"></div>
+        `;
+        socialGrid.appendChild(card);
+      }
+    }
+
+    function renderRail() {
+      rail.innerHTML = '';
+
+      videos.forEach((video, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `thumb-button ${index === activeVideoIndex ? 'active' : ''}`;
+        button.dataset.index = String(index);
+        button.setAttribute('role', 'option');
+        button.setAttribute('aria-selected', index === activeVideoIndex ? 'true' : 'false');
+        button.setAttribute('aria-label', `Play ${video.title}`);
+
+        const thumbUrl = video.thumbnails.medium || video.thumbnails.high || video.thumbnails.default || '';
+        button.innerHTML = `
+          <img class="thumb-media" src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(video.title)} thumbnail" loading="lazy">
+          <div class="thumb-copy">
+            <p class="thumb-title">${escapeHtml(video.title)}</p>
+            <div class="thumb-date">${escapeHtml(formatDate(video.publishedAt))}</div>
           </div>
         `;
-        videoRow.appendChild(slide);
 
-        // Add indicator with thumbnail
-        const indicator = document.createElement('button');
-        indicator.type = 'button';
-        indicator.setAttribute('data-bs-target', '#videoCarousel');
-        indicator.setAttribute('data-bs-slide-to', index);
-        indicator.className = `active ${isActive ? 'active' : ''}`;
-        indicator.style.backgroundImage = `url(${item.snippet.thumbnails.default.url})`; // Use default thumbnail
-        videoIndicators.appendChild(indicator);
+        button.addEventListener('click', () => {
+          setActiveVideo(index, true, true);
+        });
+
+        rail.appendChild(button);
       });
 
-      // Add event listener for indicator clicks to play video
-      videoIndicators.addEventListener('click', (event) => {
-        const button = event.target.closest('button[data-bs-slide-to]');
-        if (button) {
-          const slideTo = parseInt(button.getAttribute('data-bs-slide-to'));
-          const bootstrapCarousel = new bootstrap.Carousel(carousel);
-          bootstrapCarousel.to(slideTo); // Navigate to the slide
-          if (players[slideTo]) players[slideTo].playVideo(); // Play the video
+      loadMoreButton.disabled = !nextPageToken || isLoadingVideos;
+    }
+
+    function renderSpotlightCopy(video) {
+      spotlightTitle.textContent = video.title || 'Untitled video';
+      spotlightSub.textContent = `${formatDate(video.publishedAt)}${video.channelTitle ? ` • ${video.channelTitle}` : ''}`;
+    }
+
+    function ensurePlayer(videoId, autoplay) {
+      if (!isYouTubeApiReady || !videoId) {
+        return;
+      }
+
+      if (player) {
+        player.loadVideoById(videoId);
+        if (!autoplay) {
+          player.pauseVideo();
+        }
+        return;
+      }
+
+      player = new YT.Player('spotlight-player', {
+        videoId,
+        playerVars: {
+          autoplay: autoplay ? 1 : 0,
+          rel: 0,
+          modestbranding: 1
         }
       });
     }
 
-    window.onload = loadVideos;
+    function setActiveVideo(index, autoplay, shouldFocus) {
+      const video = videos[index];
+      if (!video) {
+        return;
+      }
+
+      activeVideoIndex = index;
+      renderSpotlightCopy(video);
+      ensurePlayer(video.videoId, autoplay);
+
+      document.querySelectorAll('.thumb-button').forEach((button, buttonIndex) => {
+        const isActive = buttonIndex === activeVideoIndex;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+
+        if (isActive && shouldFocus) {
+          button.focus({ preventScroll: true });
+        }
+      });
+    }
+
+    async function fetchVideos(options) {
+      const append = options && options.append;
+      if (isLoadingVideos) {
+        return;
+      }
+
+      isLoadingVideos = true;
+      loadMoreButton.disabled = true;
+      setRetryVisibility('videos', false);
+      updateVideoStatus(append ? 'Loading more videos...' : 'Loading videos...');
+
+      if (!append) {
+        renderVideoSkeletons();
+      }
+
+      const params = new URLSearchParams({
+        playlistId: PLAYLIST_ID,
+        maxResults: String(VIDEO_PAGE_SIZE)
+      });
+
+      if (append && nextPageToken) {
+        params.set('pageToken', nextPageToken);
+      }
+
+      try {
+        const response = await fetch(`/api/getVideos?${params.toString()}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load videos.');
+        }
+
+        const incoming = Array.isArray(data.items) ? data.items : [];
+        videos = append ? videos.concat(incoming) : incoming;
+        nextPageToken = data.nextPageToken || null;
+
+        if (videos.length === 0) {
+          rail.innerHTML = '';
+          spotlightTitle.textContent = 'No videos found.';
+          spotlightSub.textContent = 'Try again later.';
+          updateVideoStatus('No videos are available for this playlist.');
+          return;
+        }
+
+        renderRail();
+        if (!append) {
+          setActiveVideo(0, false, false);
+        }
+
+        updateVideoStatus(data.fromCache ? 'Loaded from cache.' : 'Loaded latest videos.');
+      } catch (error) {
+        console.error(error);
+        updateVideoStatus('Unable to load videos right now. Please try again.');
+        setRetryVisibility('videos', true);
+      } finally {
+        isLoadingVideos = false;
+        loadMoreButton.disabled = !nextPageToken;
+      }
+    }
+
+    async function loadSocials() {
+      setRetryVisibility('socials', false);
+      updateSocialStatus('Loading social feed...');
+      renderSocialSkeletons();
+
+      try {
+        const response = await fetch(`/api/getSocials?maxResults=${SOCIAL_PAGE_SIZE}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load social feed.');
+        }
+
+        const items = Array.isArray(data.items) ? data.items : [];
+
+        if (items.length === 0) {
+          updateSocialStatus('No social posts available yet.');
+          return;
+        }
+
+        socialGrid.innerHTML = items.map((item) => {
+          const mediaUrl = item.mediaUrl || '';
+          const label = `${item.platform || 'social'} post`;
+          const href = item.postUrl || '#';
+
+          return `
+            <a class="social-card" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${escapeHtml(label)}">
+              <img class="social-image" src="${escapeHtml(mediaUrl)}" alt="${escapeHtml(item.title || 'Social post')}" loading="lazy">
+              <div class="social-copy">
+                <p class="social-title">${escapeHtml(item.title || item.caption || 'Post')}</p>
+                <div class="social-meta">${escapeHtml(item.platform || 'social')} • ${escapeHtml(formatDate(item.timestamp))}</div>
+              </div>
+            </a>
+          `;
+        }).join('');
+
+        if (Array.isArray(data.warnings) && data.warnings.length > 0) {
+          updateSocialStatus(`Feed loaded with warnings: ${data.warnings.join(' ')}`);
+          return;
+        }
+
+        updateSocialStatus(data.fromCache ? 'Loaded social feed from cache.' : 'Loaded latest social posts.');
+      } catch (error) {
+        console.error(error);
+        updateSocialStatus('Unable to load social feed right now. Please try again.');
+        setRetryVisibility('socials', true);
+      }
+    }
+
+    function handleRailKeyboard(event) {
+      if (!videos.length) {
+        return;
+      }
+
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+        return;
+      }
+
+      event.preventDefault();
+      if (event.key === 'ArrowLeft') {
+        setActiveVideo(Math.max(activeVideoIndex - 1, 0), true, true);
+        return;
+      }
+
+      if (event.key === 'ArrowRight') {
+        setActiveVideo(Math.min(activeVideoIndex + 1, videos.length - 1), true, true);
+        return;
+      }
+
+      if (event.key === 'Home') {
+        setActiveVideo(0, true, true);
+        return;
+      }
+
+      setActiveVideo(videos.length - 1, true, true);
+    }
+
+    loadMoreButton.addEventListener('click', function () {
+      fetchVideos({ append: true });
+    });
+    videoRetryButton.addEventListener('click', function () {
+      fetchVideos({ append: false });
+    });
+    socialRetryButton.addEventListener('click', function () {
+      loadSocials();
+    });
+    rail.addEventListener('keydown', handleRailKeyboard);
+
+    window.onYouTubeIframeAPIReady = function () {
+      isYouTubeApiReady = true;
+      if (videos.length > 0) {
+        ensurePlayer(videos[activeVideoIndex].videoId, false);
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', async function () {
+      await fetchVideos({ append: false });
+      await loadSocials();
+    });
   </script>
 </body>
 </html>
