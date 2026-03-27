@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const { BlobServiceClient } = require('@azure/storage-blob');
 
 const CACHE_DURATION = 24 * 60 * 60 * 1000;
-const DEFAULT_PLAYLIST_ID = process.env.DEFAULT_PLAYLIST_ID || 'PLx3fyeqr0GmvVB8Vlh0b8W3uHSRYzWKr0';
+const DEFAULT_PLAYLIST_ID = process.env.DEFAULT_PLAYLIST_ID || 'PLx3fyeqr0GmtfrBrIpPSW7K2s-Q1rMgLj';
 const DEFAULT_MAX_RESULTS = 10;
 const MAX_RESULTS_CAP = 25;
 
