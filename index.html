@@ -412,6 +412,18 @@
       opacity: 0.45;
     }
 
+    .fb-feed-wrapper {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .fb-page {
+      min-width: 100%;
+      max-width: 900px;
+    }
+
     @media (max-width: 991.98px) {
       .hero-grid {
         grid-template-columns: 1fr;
@@ -420,6 +432,10 @@
       .social-card,
       .social-skeleton {
         grid-column: span 6;
+      }
+
+      .fb-page {
+        max-width: 100%;
       }
     }
 
@@ -456,6 +472,10 @@
       .social-card,
       .social-skeleton {
         grid-column: span 12;
+      }
+
+      .fb-page {
+        max-width: 100%;
       }
     }
   </style>
@@ -532,17 +552,18 @@
     <div class="row mt-5">
       <div class="col-12">
         <section class="section-shell" aria-labelledby="facebook-heading">
-          <h2 id="facebook-heading" class="text-center mb-3">Facebook</h2>
-          <div class="d-flex justify-content-center">
-            <div id="fb-root"></div>
+          <h2 id="facebook-heading" class="text-center mb-4">Facebook Feed</h2>
+          <div id="fb-root"></div>
+          <div class="fb-feed-wrapper">
             <div class="fb-page"
               data-href="https://www.facebook.com/OwassoRamsHSWrestling"
               data-tabs="timeline"
-              data-width="500"
-              data-small-header="false"
+              data-width="900"
+              data-small-header="true"
               data-adapt-container-width="true"
               data-hide-cover="false"
-              data-show-facepile="false">
+              data-show-facepile="false"
+              data-height="800">
               <blockquote cite="https://www.facebook.com/OwassoRamsHSWrestling" class="fb-xfbml-parse-ignore">
                 <a href="https://www.facebook.com/OwassoRamsHSWrestling">Owasso Rams HS Wrestling</a>
               </blockquote>
