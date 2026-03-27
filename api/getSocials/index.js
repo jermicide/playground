@@ -108,61 +108,85 @@ function normalizeFacebookRssItem(itemBlock, sourceId, index) {
 }
 
 async function resolveFacebookPageId(pageUrl) {
-  const url = pageUrl.replace('://www.facebook.com/', '://m.facebook.com/');
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; SocialFeedBot/1.0)'
+    const extractPageId = (html) => {
+      if (!html) {
+        return '';
+      }
+
+      const patterns = [
+        /"pageID"\s*:\s*"(\d+)"/i,
+        /"entity_id"\s*:\s*"(\d+)"/i,
+        /"profile_id"\s*:\s*"(\d+)"/i,
+        /fb:\/\/page\/(\d+)/i,
+        /page_id=(\d+)/i
+      ];
+
+      for (const pattern of patterns) {
+        const match = html.match(pattern);
+        if (match && match[1]) {
+          return match[1];
+        }
+      }
+
+      return '';
+    };
+
+    const mobileUrl = pageUrl.replace('://www.facebook.com/', '://m.facebook.com/');
+    const pluginUrl = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(pageUrl)}&tabs=timeline`;
+    const lookupUrls = [mobileUrl, pluginUrl];
+
+    for (const lookupUrl of lookupUrls) {
+      const response = await fetch(lookupUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; SocialFeedBot/1.0)'
+        }
+      });
+
+      const html = await response.text();
+
+      if (!response.ok) {
+        continue;
+      }
+
+      const pageId = extractPageId(html);
+      if (pageId) {
+        return pageId;
+      }
     }
-  });
 
-  const html = await response.text();
+    // Keep known override for the default page to avoid runtime outages if Facebook markup shifts.
+    if (/facebook\.com\/OwassoRamsHSWrestling\/?$/i.test(pageUrl)) {
+      return '303144436557258';
+    }
 
-  if (!response.ok) {
-    throw new Error(`Facebook page lookup failed with HTTP ${response.status}.`);
+    throw new Error(`Could not resolve a Facebook page ID for ${pageUrl}.`);
   }
 
-  const patterns = [
-    /"pageID"\s*:\s*"(\d+)"/i,
-    /"entity_id"\s*:\s*"(\d+)"/i,
-    /"profile_id"\s*:\s*"(\d+)"/i,
-    /page_id=(\d+)/i
-  ];
+  async function loadFacebookSource(pageUrl, maxResults) {
+    const pageId = await resolveFacebookPageId(pageUrl);
+    const feedUrl = `https://www.facebook.com/feeds/page.php?format=rss20&id=${pageId}`;
+    const response = await fetch(feedUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; SocialFeedBot/1.0)'
+      }
+    });
+    const rssText = await response.text();
 
-  for (const pattern of patterns) {
-    const match = html.match(pattern);
-    if (match && match[1]) {
-      return match[1];
+    if (!response.ok) {
+      throw new Error(`Facebook RSS feed failed with HTTP ${response.status}.`);
     }
+
+    const itemBlocks = rssText.match(/<item\b[\s\S]*?<\/item>/gi) || [];
+    const items = itemBlocks
+      .slice(0, maxResults)
+      .map((block, index) => normalizeFacebookRssItem(block, pageUrl, index))
+      .filter((entry) => entry.postUrl);
+
+    return {
+      items,
+      source: `facebook:${pageUrl}`
+    };
   }
-
-  throw new Error(`Could not resolve a Facebook page ID for ${pageUrl}.`);
-}
-
-async function loadFacebookSource(pageUrl, maxResults) {
-  const pageId = await resolveFacebookPageId(pageUrl);
-  const feedUrl = `https://www.facebook.com/feeds/page.php?format=rss20&id=${pageId}`;
-  const response = await fetch(feedUrl, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; SocialFeedBot/1.0)'
-    }
-  });
-  const rssText = await response.text();
-
-  if (!response.ok) {
-    throw new Error(`Facebook RSS feed failed with HTTP ${response.status}.`);
-  }
-
-  const itemBlocks = rssText.match(/<item\b[\s\S]*?<\/item>/gi) || [];
-  const items = itemBlocks
-    .slice(0, maxResults)
-    .map((block, index) => normalizeFacebookRssItem(block, pageUrl, index))
-    .filter((entry) => entry.postUrl);
-
-  return {
-    items,
-    source: `facebook:${pageUrl}`
-  };
-}
 
 function normalizeYouTubePost(item, playlistId) {
   const snippet = item && item.snippet ? item.snippet : {};
