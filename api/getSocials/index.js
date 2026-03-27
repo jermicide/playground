@@ -4,6 +4,7 @@ const { BlobServiceClient } = require('@azure/storage-blob');
 const CACHE_DURATION = 2 * 60 * 60 * 1000;
 const DEFAULT_MAX_RESULTS = 12;
 const MAX_RESULTS_CAP = 24;
+const DEFAULT_FACEBOOK_PAGES = ['https://www.facebook.com/OwassoRamsHSWrestling'];
 
 function buildHeaders() {
   return {
@@ -35,6 +36,132 @@ function parsePlaylistList(rawList) {
     .split(',')
     .map((value) => value.trim())
     .filter((value) => value.length > 0 && isValidPlaylistId(value));
+}
+
+function parseFacebookPageList(rawList) {
+  const source = rawList && rawList.trim().length > 0
+    ? rawList
+    : DEFAULT_FACEBOOK_PAGES.join(',');
+
+  return source
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => /^https?:\/\/(www\.)?facebook\.com\//i.test(value));
+}
+
+function decodeHtmlEntities(value) {
+  if (!value) {
+    return '';
+  }
+
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x2F;/g, '/');
+}
+
+function stripHtml(value) {
+  return decodeHtmlEntities(String(value || '').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+}
+
+function extractTagValue(block, tagName) {
+  const regex = new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)<\\/${tagName}>`, 'i');
+  const match = block.match(regex);
+  if (!match) {
+    return '';
+  }
+
+  const cdataMatch = match[1].match(/<!\[CDATA\[([\s\S]*?)\]\]>/i);
+  return cdataMatch ? cdataMatch[1] : match[1];
+}
+
+function extractAttribute(block, tagName, attributeName) {
+  const regex = new RegExp(`<${tagName}[^>]*${attributeName}="([^"]+)"[^>]*>`, 'i');
+  const match = block.match(regex);
+  return match ? match[1] : '';
+}
+
+function normalizeFacebookRssItem(itemBlock, sourceId, index) {
+  const title = decodeHtmlEntities(extractTagValue(itemBlock, 'title'));
+  const postUrl = decodeHtmlEntities(extractTagValue(itemBlock, 'link'));
+  const description = extractTagValue(itemBlock, 'description');
+  const guid = decodeHtmlEntities(extractTagValue(itemBlock, 'guid'));
+  const mediaUrl = extractAttribute(itemBlock, 'enclosure', 'url') || extractAttribute(itemBlock, 'media:content', 'url');
+  const pubDate = extractTagValue(itemBlock, 'pubDate');
+  const parsedDate = pubDate ? new Date(pubDate) : null;
+
+  return {
+    id: `fb-${guid || sourceId}-${index}`,
+    platform: 'facebook',
+    title: title || 'Facebook post',
+    caption: stripHtml(description).slice(0, 400),
+    postUrl,
+    mediaUrl: decodeHtmlEntities(mediaUrl),
+    timestamp: parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : null,
+    author: 'Owasso Rams HS Wrestling',
+    sourceId,
+    videoId: ''
+  };
+}
+
+async function resolveFacebookPageId(pageUrl) {
+  const url = pageUrl.replace('://www.facebook.com/', '://m.facebook.com/');
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; SocialFeedBot/1.0)'
+    }
+  });
+
+  const html = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`Facebook page lookup failed with HTTP ${response.status}.`);
+  }
+
+  const patterns = [
+    /"pageID"\s*:\s*"(\d+)"/i,
+    /"entity_id"\s*:\s*"(\d+)"/i,
+    /"profile_id"\s*:\s*"(\d+)"/i,
+    /page_id=(\d+)/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+
+  throw new Error(`Could not resolve a Facebook page ID for ${pageUrl}.`);
+}
+
+async function loadFacebookSource(pageUrl, maxResults) {
+  const pageId = await resolveFacebookPageId(pageUrl);
+  const feedUrl = `https://www.facebook.com/feeds/page.php?format=rss20&id=${pageId}`;
+  const response = await fetch(feedUrl, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; SocialFeedBot/1.0)'
+    }
+  });
+  const rssText = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`Facebook RSS feed failed with HTTP ${response.status}.`);
+  }
+
+  const itemBlocks = rssText.match(/<item\b[\s\S]*?<\/item>/gi) || [];
+  const items = itemBlocks
+    .slice(0, maxResults)
+    .map((block, index) => normalizeFacebookRssItem(block, pageUrl, index))
+    .filter((entry) => entry.postUrl);
+
+  return {
+    items,
+    source: `facebook:${pageUrl}`
+  };
 }
 
 function normalizeYouTubePost(item, playlistId) {
@@ -119,10 +246,11 @@ async function loadExternalJsonSource(feedUrl) {
   };
 }
 
-function buildCacheKey(maxResults, configuredPlaylists, externalFeedUrl) {
+function buildCacheKey(maxResults, configuredPlaylists, externalFeedUrl, facebookPages) {
   const playlistKey = configuredPlaylists.length > 0 ? configuredPlaylists.join('_') : 'none';
   const externalKey = externalFeedUrl ? 'external' : 'noexternal';
-  return `social-feed-${playlistKey}-${externalKey}-${maxResults}.json`;
+  const facebookKey = facebookPages.length > 0 ? `fb-${facebookPages.length}` : 'nofb';
+  return `social-feed-${playlistKey}-${externalKey}-${facebookKey}-${maxResults}.json`;
 }
 
 module.exports = async function (context, req) {
@@ -144,20 +272,21 @@ module.exports = async function (context, req) {
   const refresh = req.query.refresh === '1' || req.query.refresh === 'true';
   const configuredPlaylists = parsePlaylistList(process.env.SOCIAL_YOUTUBE_PLAYLISTS || process.env.DEFAULT_PLAYLIST_ID || '');
   const externalFeedUrl = process.env.SOCIAL_JSON_FEED_URL || '';
+  const facebookPageUrls = parseFacebookPageList(process.env.SOCIAL_FACEBOOK_PAGE_URLS || '');
   const warnings = [];
 
-  if (configuredPlaylists.length === 0 && !externalFeedUrl) {
+  if (configuredPlaylists.length === 0 && !externalFeedUrl && facebookPageUrls.length === 0) {
     context.res = {
       status: 500,
       headers: buildHeaders(),
       body: {
-        error: 'No SOCIAL_YOUTUBE_PLAYLISTS, DEFAULT_PLAYLIST_ID, or SOCIAL_JSON_FEED_URL configured.'
+        error: 'No SOCIAL_YOUTUBE_PLAYLISTS, DEFAULT_PLAYLIST_ID, SOCIAL_JSON_FEED_URL, or SOCIAL_FACEBOOK_PAGE_URLS configured.'
       }
     };
     return;
   }
 
-  const cacheFile = buildCacheKey(maxResults, configuredPlaylists, externalFeedUrl);
+  const cacheFile = buildCacheKey(maxResults, configuredPlaylists, externalFeedUrl, facebookPageUrls);
   const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
   const containerClient = blobServiceClient.getContainerClient('cache');
   const blobClient = containerClient.getBlockBlobClient(cacheFile);
@@ -198,6 +327,13 @@ module.exports = async function (context, req) {
 
       if (externalFeedUrl) {
         sourceTasks.push(loadExternalJsonSource(externalFeedUrl));
+      }
+
+      if (facebookPageUrls.length > 0) {
+        const perPage = Math.max(1, Math.ceil(maxResults / facebookPageUrls.length));
+        for (const pageUrl of facebookPageUrls) {
+          sourceTasks.push(loadFacebookSource(pageUrl, perPage));
+        }
       }
 
       const settledResults = await Promise.allSettled(sourceTasks);

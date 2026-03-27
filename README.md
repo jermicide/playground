@@ -9,7 +9,7 @@ free static website in azure with nodejs function apis, ssl certs, custom domain
 ## api endpoints
 
 * ```GET /api/getVideos``` returns normalized video items for a playlist
-* ```GET /api/getSocials``` returns normalized social feed cards aggregated from one or more providers (youtube playlists and optional external json feed)
+* ```GET /api/getSocials``` returns normalized social feed cards aggregated from one or more providers (youtube playlists, optional external json feed, and optional facebook page rss)
 
 ## environment variables
 
@@ -18,6 +18,7 @@ free static website in azure with nodejs function apis, ssl certs, custom domain
 * ```DEFAULT_PLAYLIST_ID``` optional default playlist id for video feed
 * ```SOCIAL_YOUTUBE_PLAYLISTS``` optional comma-separated playlist ids used by social feed; falls back to ```DEFAULT_PLAYLIST_ID```
 * ```SOCIAL_JSON_FEED_URL``` optional URL to a JSON feed (array or { items: [] }) that is merged into social cards
+* ```SOCIAL_FACEBOOK_PAGE_URLS``` optional comma-separated Facebook page URLs (defaults to Owasso Rams HS Wrestling page)
 
 ## notes
 
