@@ -71,6 +71,80 @@
       padding: 1rem;
     }
 
+    .hero-center {
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background:
+        radial-gradient(circle at 82% 8%, rgba(255, 125, 125, 0.18), transparent 40%),
+        linear-gradient(160deg, rgba(12, 12, 12, 0.9), rgba(36, 5, 5, 0.88));
+      padding: 1rem;
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.8fr);
+      gap: 0.9rem;
+      align-items: stretch;
+    }
+
+    .hero-photo {
+      position: relative;
+      border-radius: 0.85rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      min-height: 240px;
+      transform: translateZ(0);
+    }
+
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.08) contrast(1.05);
+      transition: transform 220ms ease;
+    }
+
+    .hero-photo:hover img,
+    .hero-photo:focus-within img {
+      transform: scale(1.03);
+    }
+
+    .hero-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.05) 42%, rgba(0, 0, 0, 0));
+      pointer-events: none;
+    }
+
+    .hero-copy {
+      position: absolute;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: 0.6rem;
+      z-index: 2;
+    }
+
+    .hero-kicker {
+      margin: 0;
+      font-size: 0.73rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f7d0d0;
+      font-weight: 700;
+    }
+
+    .hero-line {
+      margin: 0.16rem 0 0;
+      color: #fff;
+      font-size: 1.02rem;
+      line-height: 1.18;
+      font-weight: 700;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+    }
+
     .spotlight-frame {
       position: relative;
       width: 100%;
@@ -339,6 +413,10 @@
     }
 
     @media (max-width: 991.98px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
       .social-card,
       .social-skeleton {
         grid-column: span 6;
@@ -359,6 +437,18 @@
         padding: 0.75rem;
       }
 
+      .hero-center {
+        padding: 0.7rem;
+      }
+
+      .hero-photo {
+        min-height: 210px;
+      }
+
+      .hero-line {
+        font-size: 0.95rem;
+      }
+
       .video-rail {
         grid-auto-columns: minmax(160px, 180px);
       }
@@ -375,6 +465,29 @@
     <div class="row">
       <div class="col-12">
         <h1 class="display-1 fw-bold text-center mt-4">Lakey Wrestling</h1>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-12">
+        <section class="hero-center" aria-label="Featured team photos">
+          <div class="hero-grid">
+            <figure class="hero-photo m-0">
+              <img src="img/POR_7575.jpg" alt="Owasso wrestler doing a one-hand handstand at center mat" loading="eager">
+              <figcaption class="hero-copy">
+                <p class="hero-kicker">Front And Center</p>
+                <p class="hero-line">Power. Balance. Showmanship.</p>
+              </figcaption>
+            </figure>
+            <figure class="hero-photo m-0">
+              <img src="img/HVL_1565.jpg" alt="Owasso Rams wrestling team group portrait on the mat" loading="eager">
+              <figcaption class="hero-copy">
+                <p class="hero-kicker">Owasso Rams</p>
+                <p class="hero-line">One Team. One Mat. One Standard.</p>
+              </figcaption>
+            </figure>
+          </div>
+        </section>
       </div>
     </div>
 
