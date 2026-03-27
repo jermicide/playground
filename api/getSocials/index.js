@@ -108,6 +108,15 @@ function normalizeFacebookRssItem(itemBlock, sourceId, index) {
 }
 
 async function resolveFacebookPageId(pageUrl) {
+    // Known page IDs — checked first to skip unreliable network scraping.
+    const knownPages = {
+      'owassoramshswrestling': '303144436557258'
+    };
+    const slug = (pageUrl.match(/facebook\.com\/([^/?#]+)/i) || [])[1];
+    if (slug && knownPages[slug.toLowerCase()]) {
+      return knownPages[slug.toLowerCase()];
+    }
+
     const extractPageId = (html) => {
       if (!html) {
         return '';
@@ -131,32 +140,25 @@ async function resolveFacebookPageId(pageUrl) {
       return '';
     };
 
-    const mobileUrl = pageUrl.replace('://www.facebook.com/', '://m.facebook.com/');
+    // Only try the plugin endpoint — mobile pages now return a login wall.
     const pluginUrl = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(pageUrl)}&tabs=timeline`;
-    const lookupUrls = [mobileUrl, pluginUrl];
 
-    for (const lookupUrl of lookupUrls) {
-      const response = await fetch(lookupUrl, {
+    try {
+      const response = await fetch(pluginUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; SocialFeedBot/1.0)'
         }
       });
 
-      const html = await response.text();
-
-      if (!response.ok) {
-        continue;
+      if (response.ok) {
+        const html = await response.text();
+        const pageId = extractPageId(html);
+        if (pageId) {
+          return pageId;
+        }
       }
-
-      const pageId = extractPageId(html);
-      if (pageId) {
-        return pageId;
-      }
-    }
-
-    // Keep known override for the default page to avoid runtime outages if Facebook markup shifts.
-    if (/facebook\.com\/OwassoRamsHSWrestling\/?$/i.test(pageUrl)) {
-      return '303144436557258';
+    } catch (_) {
+      // Network error — fall through to the final error.
     }
 
     throw new Error(`Could not resolve a Facebook page ID for ${pageUrl}.`);
