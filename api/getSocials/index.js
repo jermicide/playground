@@ -9,7 +9,8 @@ function buildHeaders() {
   return {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Cache-Control': 'public, max-age=180'
+    'Cache-Control': 'public, max-age=180',
+    'Permissions-Policy': 'unload=*'
   };
 }
 

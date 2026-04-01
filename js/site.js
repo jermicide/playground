@@ -264,12 +264,29 @@ videoRetryButton.addEventListener('click', function () {
 rail.addEventListener('keydown', handleRailKeyboard);
 
 window.onYouTubeIframeAPIReady = function () {
+  console.log('YouTube API ready, videos loaded:', videos.length);
   isYouTubeApiReady = true;
   if (videos.length > 0) {
+    console.log('Creating player with video:', videos[activeVideoIndex].videoId);
     ensurePlayer(videos[activeVideoIndex].videoId, false);
+  } else {
+    console.log('No videos loaded when YouTube API became ready');
   }
 };
 
+// Fallback: if YouTube API doesn't load in 8 seconds, try to create player anyway
+setTimeout(function() {
+  if (!isYouTubeApiReady) {
+    console.warn('YouTube API did not load within 8 seconds, attempting fallback...');
+    isYouTubeApiReady = true;
+    if (videos.length > 0) {
+      ensurePlayer(videos[activeVideoIndex].videoId, false);
+    }
+  }
+}, 8000);
+
 window.addEventListener('DOMContentLoaded', async function () {
+  console.log('DOM loaded, fetching videos...');
   await fetchVideos();
+  console.log('Videos fetched, total:', videos.length);
 });
